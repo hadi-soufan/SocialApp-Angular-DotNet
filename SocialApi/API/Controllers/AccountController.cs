@@ -24,16 +24,23 @@ public class AccountController : BaseApiController
     [HttpPost("register")]
     public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
     {
-
         if (await UserExists(registerDTO.Alias)) return BadRequest("Username exists");
 
         using var hmac = new HMACSHA512();
+
+        var defaultUserType = await _context.UserTypes.FirstOrDefaultAsync(ut => ut.Id == 2);
+        var defaultRole = await _context.Roles.FirstOrDefaultAsync(r => r.Id == 3);
+
+        if (defaultUserType is null || defaultRole is null)
+            return BadRequest("Default user type or role not found.");
 
         var user = new AppUser
         {
             UserName = registerDTO.Alias.ToLower(),
             PasswordHash = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Creds))),
-            PasswordSalt = Convert.ToBase64String(hmac.Key)
+            PasswordSalt = Convert.ToBase64String(hmac.Key),
+            UserType = defaultUserType,   
+            Role = defaultRole         
         };
 
         _context.Users.Add(user);
@@ -42,9 +49,12 @@ public class AccountController : BaseApiController
         return new UserDTO
         {
             Alias = user.UserName,
+            UserTypeId = user.UserTypeId,
+            UserRoleId = user.RoleId,
             AuthToken = _tokenService.CreateToken(user)
         };
     }
+
 
     [HttpPost("login")]
     public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
@@ -65,7 +75,9 @@ public class AccountController : BaseApiController
         return new UserDTO 
         {
             Alias = user.UserName,
-            AuthToken = _tokenService.CreateToken(user) 
+            UserTypeId = user.UserTypeId,
+            UserRoleId = user.RoleId,
+            AuthToken = _tokenService.CreateToken(user)
         };
     }
 
