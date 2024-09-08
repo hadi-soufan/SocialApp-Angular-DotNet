@@ -11,8 +11,7 @@ namespace API.Extensions
     {
         public static IServiceCollection AddApplicaitonServices(this IServiceCollection services, IConfiguration configuration)
         {
-            Env.Load();
-            var connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
+            var connectionString = configuration.GetConnectionString("MYSQL_CONNECTION_STRING");
 
             #region Controllers
             services.AddControllers();

@@ -2,8 +2,8 @@
 {
     public class UserDTO
     {
-        public required string Username { get; set; }
-        public required string Token { get; set; }
+        public required string Alias { get; set; }
+        public required string AuthToken { get; set; }
 
     }
 }

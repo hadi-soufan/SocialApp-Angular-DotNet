@@ -1,18 +1,14 @@
 using API.Data;
+using API.Extensions;
 using DotNetEnv;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-Env.Load();
-var connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
-
 builder.Services.AddControllers();
-
-builder.Services.AddDbContext<DataContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+builder.Services.AddApplicaitonServices(builder.Configuration); 
+builder.Services.AddIdentityServices(builder.Configuration);
 
 builder.Services.AddApiVersioning(options =>
 {

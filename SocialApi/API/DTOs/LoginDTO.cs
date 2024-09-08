@@ -2,7 +2,7 @@
 {
     public class LoginDTO
     {
-        public required string Username { get; set; }
-        public required string Password { get; set; }
+        public required string Alias { get; set; }
+        public required string Creds { get; set; }
     }
 }
